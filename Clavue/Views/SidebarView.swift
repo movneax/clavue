@@ -89,7 +89,7 @@ struct SidebarView: View {
                             }
                             let preview = session.preview
                                 .trimmingCharacters(in: .whitespacesAndNewlines)
-                            Text(preview.isEmpty ? "Empty session" : preview)
+                            Text(verbatim: preview.isEmpty ? "Empty session" : preview)
                                 .font(.caption)
                                 .lineLimit(2)
                                 .foregroundStyle(

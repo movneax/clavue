@@ -115,13 +115,30 @@ actor SessionRepository {
             if case .assistant(let text, _, _) = event {
                 let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 if !trimmed.isEmpty && !trimmed.hasPrefix("{") {
-                    let oneLine = trimmed.components(separatedBy: .newlines)
+                    let prose = stripCodeBlocks(trimmed)
+                    guard !prose.isEmpty else { continue }
+                    let oneLine = prose.components(separatedBy: .newlines)
                         .joined(separator: " ")
                     return String(oneLine.prefix(100))
                 }
             }
         }
         return ""
+    }
+
+    private func stripCodeBlocks(_ text: String) -> String {
+        var lines = text.components(separatedBy: .newlines)
+        var result: [String] = []
+        var inCode = false
+        for line in lines {
+            if line.hasPrefix("```") {
+                inCode.toggle()
+                continue
+            }
+            if !inCode { result.append(line) }
+        }
+        return result.joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
 }
